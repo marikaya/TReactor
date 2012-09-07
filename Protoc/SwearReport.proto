@@ -1,0 +1,10 @@
+package XReactor;
+
+option optimize_for = SPEED;
+
+
+message SwearReport{
+	required string GameName = 1;
+	required string User = 2;
+	repeated string GameChat = 3;	
+}

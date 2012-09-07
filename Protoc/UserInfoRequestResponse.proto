@@ -1,0 +1,22 @@
+package XReactor;
+ 
+option optimize_for = SPEED;
+
+message UserInfoRequestResponse{
+	required string  Username = 1;
+	optional int32 Kill = 2;
+	optional int32 Death = 3;
+	optional int32 Creeps = 4;
+	optional int32 Assist = 5;
+	optional int32 Tower = 6;
+	optional int32 Rax = 7;
+	optional int32 Score = 8;
+	optional int32 Deny = 9;
+	optional int32 Neutral = 10;
+	optional int32 TotalGames = 11;
+	optional int32 Leaves = 12;
+	optional int32 Wins = 13;
+	optional int32 Lost = 14;
+	optional int32 LockPoint = 15;
+	optional int32 TotalReport = 16;
+}

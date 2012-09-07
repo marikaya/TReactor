@@ -1,0 +1,22 @@
+package XReactor;
+ 
+option optimize_for = SPEED;
+
+message LoginRequestResponse {
+	required string  Username = 1;
+	optional UserType Usertype = 2;
+	required LoginCode Logincode = 3;
+}
+enum UserType {
+	USER = 1;   
+	ADMIN = 2;
+    MODERATOR = 3;	
+	MUTED = 4;
+}
+enum LoginCode{
+	LOGIN_SUCCESS = 1;
+	ALREADY_LOGGED = 2;
+	PASSWORD_INCORRECT = 3;
+	USERNAME_NOT_FOUND = 4;
+	BANNED = 5;
+}

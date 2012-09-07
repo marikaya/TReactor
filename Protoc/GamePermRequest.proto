@@ -1,0 +1,17 @@
+package XReactor;
+ 
+option optimize_for = SPEED;
+
+message GamePermRequest {
+	required GameType Gametype = 1;
+	optional string Gameversion = 2;
+}
+
+enum GameType{
+	WARCRAFTIII = 1;
+	DOTA2 = 2;
+	COUNTER = 3;
+	WOW = 4;
+	STARCRAFT = 5;
+}  
+

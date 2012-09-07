@@ -1,0 +1,13 @@
+package XReactor;
+ 
+option optimize_for = SPEED;
+
+message LoginRequest {
+  required string name = 1;
+  required string version = 2;     
+  optional string email = 3;
+  required string password = 4;
+  
+ }
+  
+

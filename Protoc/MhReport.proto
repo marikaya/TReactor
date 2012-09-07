@@ -1,0 +1,14 @@
+package XReactor;
+ 
+option optimize_for = SPEED;
+
+message MhReport {
+	required string MachineName = 1;
+	repeated string Processes = 2;
+	required string Time = 3;
+	required string MhType = 4;
+	required string GameName = 5;
+	required string GameTime = 6;
+}
+  
+
