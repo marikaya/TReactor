@@ -9,15 +9,26 @@ using XReactor.XUtil;
 
 namespace XServer.XServerSockets
 {
+    public delegate void DestroyDelegate(XClient nXClient);
     public delegate void OnLoginRequest(LoginRequest lr);
     public delegate void OnUserInfoRequest(UserInfoRequest uir);
     public delegate void OnGamePermRequest(GamePermRequest gpr);
-    class XClient
+    public class XClient : IDisposable
     {
+        XProcessor xp;
         public OnLoginRequest OnReceivedOnLoginRequest;
         public OnUserInfoRequest OnReceivedUserInfoRequest;
         public OnGamePermRequest OnReceivedOnGamePermRequest;
+        public DestroyDelegate OnDisconnect;
         Socket m_ClientSocket;
+        private string m_Username;
+
+        public string Username
+        {
+            get { return m_Username; }
+            set { m_Username = value; }
+        }
+
         byte[] m_Buffer = new byte[1024];
 
         public Socket ClientSocket
@@ -29,38 +40,42 @@ namespace XServer.XServerSockets
         public XClient(Socket nClientSocket)
         {
             this.m_ClientSocket = nClientSocket;
-            OnReceivedOnLoginRequest += new OnLoginRequest(ProcessLoginRequest);
+            
+            
         }
 
         void ProcessLoginRequest(LoginRequest LR)
         {
-            Console.WriteLine("A Client Requested For Login[" + LR.Name + "] with Password [" + LR.Password + "]");
-            //
-            // BURADA LOGIN ISLEMLERI YER ALMASI LAZIM
-            //
-            LoginRequestResponse.Builder builder = new LoginRequestResponse.Builder();
-            builder.SetLogincode( LoginCode.LOGIN_SUCCESS);
-            builder.SetUsername ( LR.Name);
-            builder.Usertype = UserType.ADMIN;
-            SendBytes(CreateCommand(XCommunicateEnum.LoginRequestResponse, builder.Build().ToByteArray()));
-            Console.WriteLine("Login Request Responsed \n ================================================\n" + builder.Build().ToString());
+            
         }
 
         public void StartRelay()
         {
+            xp = new XProcessor(this);
+            xp.RegEvents();
             this.ClientSocket.BeginReceive(m_Buffer, 0, m_Buffer.Length, SocketFlags.None, new AsyncCallback(OnReceive), null);
         }
 
         void OnReceive(IAsyncResult ar)
         {
-            int ret = ClientSocket.EndReceive(ar);
-            if (ret <= 0)
+            try
             {
-                //Kapatma
-                return;
-            }            
-            ExtractBuffer(m_Buffer, ret);
-            this.ClientSocket.BeginReceive(m_Buffer, 0, m_Buffer.Length, SocketFlags.None, new AsyncCallback(OnReceive), null);
+
+                int ret = ClientSocket.EndReceive(ar);
+                if (ret <= 0)
+                {
+                    Dispose();
+                    return;
+                }
+                ExtractBuffer(m_Buffer, ret);
+                this.ClientSocket.BeginReceive(m_Buffer, 0, m_Buffer.Length, SocketFlags.None, new AsyncCallback(OnReceive), null);
+            }
+            catch
+            {
+                Dispose();
+            }
+
+
 
         }
 
@@ -101,18 +116,7 @@ namespace XServer.XServerSockets
         /// </summary>
         /// <param name="Command">Gönderilecek Komutun Türü</param>
         /// <param name="data">Komutun Datası</param>
-        private byte[] CreateCommand(XCommunicateEnum Command, byte[] data)
-        {
-            byte[] temp = new byte[4 + data.Length];
-            byte[] size = BitConverter.GetBytes((ushort)data.Length);
-
-            temp[0] = (byte)XCommunicateEnum.Header;
-            temp[1] = (byte)Command;
-            data.CopyTo(temp, 4);
-            size.CopyTo(temp, 2);
-
-            return temp;
-        }
+     
         /// <summary>
         /// Veriyi Bastaki 2 bytedan Ayrıştırır
         /// </summary>
@@ -130,14 +134,24 @@ namespace XServer.XServerSockets
         /// İstemci Sockete Veri yolla
         /// </summary>
         /// <param name="data">Yollanacak Veri</param>
-        private void SendBytes(byte[] data)
+        public void SendBytes(byte[] data)
         {
             this.ClientSocket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(OnSend), null);
         }
 
         void OnSend(IAsyncResult ar)
-        {            
-            ClientSocket.EndSend(ar);
+        {
+            try
+            {
+                int length = ClientSocket.EndSend(ar);
+                if (length > 0)
+                    return;
+            }
+            catch
+            {
+
+            }
+            Dispose();
         }
        
         /// <summary>
@@ -145,11 +159,30 @@ namespace XServer.XServerSockets
         /// </summary>
         public void Dispose()
         {
-            this.ClientSocket = null;
-               
-        }      
+            // Bitir
+            try
+            {
+                this.ClientSocket.Shutdown(SocketShutdown.Both);
+            }
+            catch
+            {
 
-        
+            }
+            if (this.ClientSocket != null)
+            {
+                this.ClientSocket.Close();
+            }
+            this.ClientSocket = null;
+            if (OnDisconnect != null)
+            {
+                OnDisconnect(this);
+            }
+            
+            
+
+               
+        }
+      
     }
     public enum XCommunicateEnum : byte
     {

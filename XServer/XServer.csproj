@@ -68,6 +68,7 @@
     <Compile Include="XMessages\UserInfoRequestResponse.cs" />
     <Compile Include="XServerSockets\XClient.cs" />
     <Compile Include="XServerSockets\XListener.cs" />
+    <Compile Include="XServerSockets\XProcessor.cs" />
     <Compile Include="XUtil\UtilVariables.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -10,6 +10,7 @@ namespace XServer.XServerSockets
     class XListener
     {
         IPEndPoint m_LocalEP;
+        List<XClient> m_ClientList = new List<XClient>();
 
         public IPEndPoint LocalEP
         {
@@ -47,10 +48,19 @@ namespace XServer.XServerSockets
             Socket temp = LocalSocket.EndAccept(ar);
             XClient xc = new XClient(temp);
             xc.StartRelay();
-
-            LocalSocket.BeginAccept(new AsyncCallback(OnConnect), null);
-            
+            m_ClientList.Add(xc);
+            xc.OnDisconnect += new DestroyDelegate(RemoveClient);
+            LocalSocket.BeginAccept(new AsyncCallback(OnConnect), null);            
         }
+
+        private void RemoveClient(XClient xc)
+        {
+            m_ClientList.Remove(xc);
+            if ( xc.Username != null )
+            Console.WriteLine("Kullanıcı Düştü"+xc.Username);
+        }
+
+
 
     }
 }
