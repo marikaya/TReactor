@@ -6,6 +6,7 @@ using System.Text;
 using XReactor;
 using System.Net.Sockets;
 using XReactor.XUtil;
+using System.Threading;
 
 namespace XServer.XServerSockets
 {
@@ -52,7 +53,9 @@ namespace XServer.XServerSockets
         public void StartRelay()
         {
             xp = new XProcessor(this);
-            xp.RegEvents();
+
+            Thread tr = new Thread(xp.RegEvents);
+            tr.Start();
             this.ClientSocket.BeginReceive(m_Buffer, 0, m_Buffer.Length, SocketFlags.None, new AsyncCallback(OnReceive), null);
         }
 

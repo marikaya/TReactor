@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using ss = System.Windows.Application;
 using XReactor.XMemoryProcess;
 using System.Net;
+using XReactor.XInterface;
 
 namespace XReactor
 {
@@ -38,6 +39,9 @@ namespace XReactor
 
             XReactorSockets XRS = new XReactorSockets(new IPEndPoint(IPAddress.Parse("127.0.0.1"),11000));
             new LoginPanel(XRS).ShowDialog();
+
+            new DashBoard(XRS).ShowDialog();
+            XRS.Dispose();
                        
         }
     }

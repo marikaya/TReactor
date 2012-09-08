@@ -30,6 +30,7 @@ namespace ConsoleApplication1.XInterface
             if (Lr.Logincode == LoginCode.LOGIN_SUCCESS)
             {
                 MessageBox.Show("Giriş Başarılı");
+                this.Close();
             }
             else
             {

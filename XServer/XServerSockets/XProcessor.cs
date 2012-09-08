@@ -46,7 +46,8 @@ namespace XServer.XServerSockets
             Console.WriteLine("Login Request Responsed \n ================================================\n" + builder.Build().ToString());
             if (LR.Name == "timeout")
             {
-                m_Client.Username = LR.Name;        
+                m_Client.Username = LR.Name;
+                Console.WriteLine("Username settings for client ="+LR.Name);
             }
         
         }
