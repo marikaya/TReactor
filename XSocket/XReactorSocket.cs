@@ -173,6 +173,15 @@ namespace XReactor.XSockets
             Lr.SetEmail("sjdjsj");
             SendBytes(CreateCommand(XCommunicateEnum.LoginRequest, Lr.Build().ToByteArray()));
         }
+        public void SendUserInfoRequest()
+        {
+            UserInfoRequest.Builder sd = new UserInfoRequest.Builder();
+            sd.SetUsername("timeout");
+            sd.SetInfotype(InfoType.DOTA);
+            sd.SetGametype(1,GameType.WARCRAFTIII);
+
+            SendBytes(CreateCommand(XCommunicateEnum.UserInfoRequest, sd.Build().ToByteArray()));
+        }
         /// <summary>
         /// Küfür Raporu Gönder
         /// </summary>

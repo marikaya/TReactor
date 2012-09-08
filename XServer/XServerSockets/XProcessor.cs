@@ -31,7 +31,21 @@ namespace XServer.XServerSockets
 
         private void ProcessUserInfoRequest(UserInfoRequest uir)
         {
-           
+            if (uir.Username != m_Client.Username)
+            {
+                m_Client.Dispose();
+                return;
+            }
+           m_Client.SendBytes(CreateCommand(XCommunicateEnum.UserInfoRequestResponse,PrepareUserInfo(uir).ToByteArray()));
+         
+        }
+
+        private UserInfoRequestResponse PrepareUserInfo(UserInfoRequest uir)
+        {
+            UserInfoRequestResponse.Builder builder = new UserInfoRequestResponse.Builder();
+            builder.SetAssist(10).SetCreeps(10).SetDeath(10).SetDeny(10).SetKill(213).SetLost(21312).SetRax(21312).SetTotalGames(1213).SetTower(2312).SetWins(21321).SetTotalReport(20);
+
+            return builder.Build();
         }
 
         private void ProcessLoginRequest(LoginRequest LR)
@@ -43,7 +57,7 @@ namespace XServer.XServerSockets
             LoginRequestResponse.Builder builder = new LoginRequestResponse.Builder();
             builder.SetLogincode(LoginCode.LOGIN_SUCCESS);
 
-            m_Mysql.CheckLogin(LR.Name, LR.Password);
+           // m_Mysql.CheckLogin(LR.Name, LR.Password);
             builder.SetUsername(LR.Name);
             builder.Usertype = UserType.ADMIN;
             m_Client.SendBytes(CreateCommand(XCommunicateEnum.LoginRequestResponse, builder.Build().ToByteArray()));
