@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MySql.Data.MySqlClient;
+using XReactor;
 
 namespace XServer.XData
 {
@@ -22,15 +23,18 @@ namespace XServer.XData
             myCon = new MySqlConnection(nConnectStr);
         }
 
-        public bool CheckLogin(string username, string password)
+        public LoginCode CheckLogin(string username, string password)
         {
             string tusername = "", tpassword = "";
             string sql = "SELECT * from user where user='"+username+"'";
 
+
+
             MySqlCommand cmd = new MySqlCommand(sql, this.myCon);
 
+            myCon.Open();
             myRead = cmd.ExecuteReader();
-
+            myCon.Close();
             while (myRead.Read())
             {
                 tusername = myRead.GetString("username");
@@ -41,7 +45,7 @@ namespace XServer.XData
             {
                 if (tpassword == password)
                 {
-                    return true;
+                    return LoginCode.LOGIN_SUCCESS;
                 }
             }
             else
@@ -49,7 +53,7 @@ namespace XServer.XData
                 
             }
 
-            return false;
+            return LoginCode.PASSWORD_INCORRECT;
 
         }
 

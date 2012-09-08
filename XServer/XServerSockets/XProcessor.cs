@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using XReactor;
+using XServer.XData;
 
 namespace XServer.XServerSockets
 {
     class XProcessor
     {
         XClient m_Client;
+        XMySQL m_Mysql;
 
         public XProcessor(XClient nXClient)
         {
@@ -40,6 +42,8 @@ namespace XServer.XServerSockets
             //
             LoginRequestResponse.Builder builder = new LoginRequestResponse.Builder();
             builder.SetLogincode(LoginCode.LOGIN_SUCCESS);
+
+            m_Mysql.CheckLogin(LR.Name, LR.Password);
             builder.SetUsername(LR.Name);
             builder.Usertype = UserType.ADMIN;
             m_Client.SendBytes(CreateCommand(XCommunicateEnum.LoginRequestResponse, builder.Build().ToByteArray()));
